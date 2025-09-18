@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,13 +36,17 @@ public class Transaction {
     @JoinColumn(name = "to_account_id")
     private Account toAccount;
 
-    private Long amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private Type type;
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @Column(unique = true, nullable = false, updatable = false)
+    private String referenceId;
+
 
     private LocalDateTime createdAt;
 
