@@ -1,5 +1,6 @@
-package com.projecct.bankx_digital_banking_platform.transaction;
+package com.projecct.bankx_digital_banking_platform.outbox;
 
+import com.projecct.bankx_digital_banking_platform.transaction.Transaction;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,29 +12,24 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "events")
+@Table(name = "outbox_events")
 public class OutboxEvent {
-
-    public enum Status {
-        NEW, SENT
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long id; // Unique ID for this event
 
-    private String eventType;
+    private String aggregateType; // e.g., "Transaction", "Account"
+    private String aggregateId;   // e.g., transaction referenceId, accountId
+
+    private String type;          // Type of event, e.g., "TRANSFER_INITIATED", "TRANSACTION_SUCCESS"
 
     @Column(columnDefinition = "TEXT")
-    private String payload;
+    private String payload;       // JSON string of event data
 
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    private Transaction.Status status;        // PENDING, SENT, FAILED
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now(); // Timestamp
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+    private LocalDateTime sentAt; // When the event was successfully sent
 }

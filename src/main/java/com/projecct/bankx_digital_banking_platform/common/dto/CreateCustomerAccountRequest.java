@@ -20,8 +20,4 @@ public class CreateCustomerAccountRequest {
     private String username;
     @NotBlank
     private String password;
-
-    // Account info
-    private String accountType; // SAVINGS, CURRENT, WALLET
-    private Long initialBalance;
 }

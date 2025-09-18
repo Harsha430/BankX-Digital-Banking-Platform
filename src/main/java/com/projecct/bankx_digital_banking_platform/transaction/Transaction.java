@@ -36,6 +36,7 @@ public class Transaction {
     @JoinColumn(name = "to_account_id")
     private Account toAccount;
 
+    @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
@@ -53,5 +54,25 @@ public class Transaction {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        if (status == null) {
+            status = Status.PENDING;
+        }
+        if (referenceId == null) {
+            referenceId = generateRefId();
+        }
+    }
+
+
+
+    private String generateRefId() {
+        String timestamp = java.time.format.DateTimeFormatter
+                .ofPattern("yyyyMMddHHmmss")
+                .format(LocalDateTime.now());
+        return "TXN-" + timestamp + "-" + random4Digits();
+    }
+
+
+    private String random4Digits() {
+        return String.valueOf((int)(Math.random() * 9000) + 1000);
     }
 }
