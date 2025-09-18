@@ -6,12 +6,13 @@ import com.projecct.bankx_digital_banking_platform.audit.Audit;
 import com.projecct.bankx_digital_banking_platform.audit.AuditRepo;
 import com.projecct.bankx_digital_banking_platform.common.dto.LedgerEntry;
 import com.projecct.bankx_digital_banking_platform.common.dto.repo.LedgerRepo;
-import com.projecct.bankx_digital_banking_platform.common.dto.repo.TransactionDto;
 import com.projecct.bankx_digital_banking_platform.exceptions.InsufficientBalanceException;
 import com.projecct.bankx_digital_banking_platform.transaction.Transaction;
 import com.projecct.bankx_digital_banking_platform.transaction.repo.OutboxRepo;
 import com.projecct.bankx_digital_banking_platform.transaction.repo.TransactionRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import com.projecct.bankx_digital_banking_platform.outbox.OutboxEvent;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class TransactionService {
     }
 
     @Transactional
-    public TransactionDto createTransaction(Integer fromAccountId, Integer toAccountId, BigDecimal amount, Transaction.Type type) {
+    public LedgerEntry.TransactionDto createTransaction(Integer fromAccountId, Integer toAccountId, BigDecimal amount, Transaction.Type type) {
         Account fromAccount = null;
         Account toAccount = null;
 
@@ -58,7 +59,7 @@ public class TransactionService {
             if (fromAccount.getBalance().compareTo(amount) < 0) {
                 Transaction failedTxn = saveTransaction(fromAccount, toAccount, amount, type, Transaction.Status.FAILED);
                 saveAudit(failedTxn, fromAccount.getCustomer().getName(), "FAILED");
-                return new TransactionDto(failedTxn.getStatus(), failedTxn.getReferenceId());
+                return new LedgerEntry.TransactionDto(failedTxn.getStatus(), failedTxn.getReferenceId());
             }
         }
 
@@ -78,33 +79,39 @@ public class TransactionService {
         saveLedger(transaction, fromAccount, toAccount, amount);
         saveOutboxEvent(transaction, fromAccount, toAccount, amount);
 
-        return new TransactionDto(transaction.getStatus(), transaction.getReferenceId());
+        return new LedgerEntry.TransactionDto(transaction.getStatus(), transaction.getReferenceId());
     }
 
     @Transactional
-    public TransactionDto deposit(Integer accountId, BigDecimal amount) {
+    @CacheEvict(value = "transactions", key = "#accountId")
+    public LedgerEntry.TransactionDto deposit(Integer accountId, BigDecimal amount) {
         return createTransaction(null, accountId, amount, Transaction.Type.CREDIT);
     }
 
     @Transactional
-    public TransactionDto withdraw(Integer accountId, BigDecimal amount) {
+    @CacheEvict(value = "transactions", key = "#accountId")
+    public LedgerEntry.TransactionDto withdraw(Integer accountId, BigDecimal amount) {
         return createTransaction(accountId, null, amount, Transaction.Type.DEBIT);
     }
 
     @Transactional
-    public TransactionDto transfer(Integer fromAccountId, Integer toAccountId, BigDecimal amount) throws InsufficientBalanceException {
+    @CacheEvict(value = "transactions", allEntries = true)
+    public LedgerEntry.TransactionDto transfer(Integer fromAccountId, Integer toAccountId, BigDecimal amount) throws InsufficientBalanceException {
         return createTransaction(fromAccountId, toAccountId, amount, Transaction.Type.TRANSFER);
     }
 
+    @Cacheable(value = "transactionByRef", key = "#referenceId")
     public Transaction getTransactionByReferenceId(String referenceId) {
         return transactionRepo.findByReferenceId(referenceId)
                 .orElseThrow(() -> new RuntimeException("Transaction not found"));
     }
 
+    @Cacheable(value = "transactions", key = "#accountId")
     public List<Transaction> getTransactionsByAccount(Integer accountId) {
         return transactionRepo.findAllByFromAccountIdOrToAccountId(accountId, accountId);
     }
 
+    @Cacheable(value = "transactionsByDate", key = "#accountId + '_' + #start.toString() + '_' + #end.toString()")
     public List<Transaction> getTransactionsByDateRange(Integer accountId, LocalDate start, LocalDate end) {
         return transactionRepo.findByAccountIdAndDateRange(accountId, start, end);
     }

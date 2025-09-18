@@ -38,4 +38,13 @@ public class LedgerEntry {
     private BigDecimal fromBalanceAfter; // Balance of the “fromAccount” after this transaction
 
     private LocalDateTime createdAt = LocalDateTime.now(); // Timestamp
+
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class TransactionDto {
+
+        private Transaction.Status status;
+        private String referenceId;
+    }
 }
