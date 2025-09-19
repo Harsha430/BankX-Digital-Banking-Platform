@@ -80,4 +80,12 @@ public class CustomerService {
         if (address != null) customer.setAddress(address);
         return customerRepo.save(customer);
     }
+    
+    // 6️⃣ Delete customer (evict from cache)
+    @Transactional
+    @CacheEvict(value = "customersById", key = "#customerId")
+    public void deleteCustomer(UUID customerId) {
+        Customer customer = getCustomerById(customerId);
+        customerRepo.delete(customer);
+    }
 }
