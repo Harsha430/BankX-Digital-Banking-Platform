@@ -1,4 +1,4 @@
-package com.projecct.bankx_digital_banking_platform.outbox;
+package com.projecct.bankx_digital_banking_platform.transaction;
 
 import com.projecct.bankx_digital_banking_platform.transaction.Transaction;
 import jakarta.persistence.*;

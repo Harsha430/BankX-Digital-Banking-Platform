@@ -4,14 +4,15 @@ import com.projecct.bankx_digital_banking_platform.account.Account;
 import com.projecct.bankx_digital_banking_platform.account.repo.AccountRepo;
 import com.projecct.bankx_digital_banking_platform.customer.Customer;
 import com.projecct.bankx_digital_banking_platform.customer.repo.CustomerRepo;
-import com.projecct.bankx_digital_banking_platform.notification.AccountCreatedEvent;
+import com.projecct.bankx_digital_banking_platform.transaction.Transaction;
+import com.projecct.bankx_digital_banking_platform.transaction.repo.OutboxRepo;
 import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
-
+import com.projecct.bankx_digital_banking_platform.transaction.OutboxEvent;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -21,12 +22,14 @@ public class AccountService {
 
     private final AccountRepo accountRepo;
     private final CustomerRepo customerRepo;
+    private final OutboxRepo outboxRepo;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
-    public AccountService(AccountRepo accountRepo, CustomerRepo customerRepo, ApplicationEventPublisher applicationEventPublisher) {
+    public AccountService(AccountRepo accountRepo, CustomerRepo customerRepo, OutboxRepo outboxRepo, ApplicationEventPublisher applicationEventPublisher) {
         this.accountRepo = accountRepo;
         this.customerRepo = customerRepo;
+        this.outboxRepo = outboxRepo;
         this.applicationEventPublisher = applicationEventPublisher;
     }
 
@@ -43,8 +46,18 @@ public class AccountService {
         account.setBalance(initialBalance != null ? initialBalance : BigDecimal.ZERO);
         Account saved = accountRepo.save(account);
 
-        applicationEventPublisher.publishEvent(
-                new AccountCreatedEvent(account.getCustomer().getName(),account.getCustomer().getEmail(),account.getAccountNumber()));
+        //? for Kafka
+        OutboxEvent event = new OutboxEvent();
+        event.setAggregateType("Account");
+        event.setAggregateId(saved.getId().toString());
+        event.setType("ACCOUNT_CREATED");
+        event.setPayload(
+                "{ \"name\": \"" + customer.getName() + "\", " +
+                        "\"email\": \"" + customer.getEmail() + "\", " +
+                        "\"accountNumber\": \"" + saved.getAccountNumber() + "\" }"
+        );
+        event.setStatus(Transaction.Status.PENDING);
+        outboxRepo.save(event);
 
         return saved;
     }
