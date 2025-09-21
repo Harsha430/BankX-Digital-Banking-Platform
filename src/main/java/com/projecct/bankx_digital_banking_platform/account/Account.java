@@ -1,5 +1,6 @@
 package com.projecct.bankx_digital_banking_platform.account;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projecct.bankx_digital_banking_platform.customer.Customer;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,7 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", referencedColumnName = "id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Customer customer;
 
     // Auto-generate a 12-digit numeric account number before insert

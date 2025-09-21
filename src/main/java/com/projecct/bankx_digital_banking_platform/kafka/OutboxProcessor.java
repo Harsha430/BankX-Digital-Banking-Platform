@@ -27,13 +27,22 @@ public class OutboxProcessor {
     public void processOutbox() {
         List<OutboxEvent> pendingEvents = outboxRepo.findByStatus(Transaction.Status.PENDING);
 
+        System.out.println("Found " + pendingEvents.size() + " pending events to process");
+
         for (OutboxEvent event : pendingEvents) {
             try {
-                kafkaTemplate.send(event.getAggregateType().toLowerCase() + ".events", event.getPayload());
+                String topic = event.getAggregateType().toLowerCase() + ".events";
+                System.out.println("Sending event to topic: " + topic + " with payload: " + event.getPayload());
+
+                kafkaTemplate.send(topic, event.getPayload());
                 event.setStatus(Transaction.Status.SUCCESS);
                 event.setSentAt(LocalDateTime.now());
                 outboxRepo.save(event);
+
+                System.out.println("Successfully sent event ID: " + event.getId());
             } catch (Exception e) {
+                System.err.println("Failed to send event ID: " + event.getId() + " - Error: " + e.getMessage());
+                e.printStackTrace();
                 event.setStatus(Transaction.Status.FAILED);
                 outboxRepo.save(event);
             }

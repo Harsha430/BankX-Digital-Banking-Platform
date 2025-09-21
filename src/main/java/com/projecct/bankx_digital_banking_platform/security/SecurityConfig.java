@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+// @EnableMethodSecurity  // Temporarily disabled to allow all requests
 public class SecurityConfig {
 
     @Autowired

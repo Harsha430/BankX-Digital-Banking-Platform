@@ -67,4 +67,15 @@ public class AccountController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/number/{accountNumber}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Account> getAccountByNumber(@PathVariable String accountNumber) {
+        try {
+            Account account = accountService.getAccountByNumber(accountNumber);
+            return ResponseEntity.ok(account);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

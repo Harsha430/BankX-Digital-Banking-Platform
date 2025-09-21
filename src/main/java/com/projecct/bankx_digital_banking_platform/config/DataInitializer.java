@@ -28,10 +28,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (customerRepo.count() == 0) {
-            log.info("Initializing sample data...");
-            
-            // Create admin customer
+        log.info("Checking and initializing sample data...");
+
+        // Always check and create admin customer if not exists
+        if (customerRepo.findByEmail("admin@bankx.com").isEmpty()) {
             Customer adminCustomer = new Customer();
             adminCustomer.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
             adminCustomer.setName("John Doe");
@@ -40,7 +40,7 @@ public class DataInitializer implements CommandLineRunner {
             adminCustomer.setAddress("123 Main Street, New York, NY 10001");
             adminCustomer.setKycStatus(Customer.Status.VERIFIED);
             adminCustomer.setCreatedAt(LocalDateTime.now());
-            
+
             customerRepo.save(adminCustomer);
             log.info("Created admin customer: {}", adminCustomer.getEmail());
             
@@ -83,9 +83,51 @@ public class DataInitializer implements CommandLineRunner {
             accountRepo.save(emergencyAccount);
             
             log.info("Created 4 accounts for admin customer");
-            log.info("Sample data initialization completed!");
-        } else {
-            log.info("Sample data already exists, skipping initialization");
         }
+
+        // Always check and create personal customer if not exists
+        if (customerRepo.findByEmail("harshasrikarthikeyathumuluri@gmail.com").isEmpty()) {
+            Customer personalCustomer = new Customer();
+            personalCustomer.setId(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"));
+            personalCustomer.setName("Harsha Sri Karthikeya Thumuluri");
+            personalCustomer.setEmail("harshasrikarthikeyathumuluri@gmail.com");
+            personalCustomer.setPhone("5551234568");
+            personalCustomer.setAddress("Personal Address");
+            personalCustomer.setKycStatus(Customer.Status.VERIFIED);
+            personalCustomer.setCreatedAt(LocalDateTime.now());
+
+            customerRepo.save(personalCustomer);
+            log.info("Created personal customer: {}", personalCustomer.getEmail());
+
+            // Create UserAuth for personal customer
+            UserAuth personalAuth = new UserAuth();
+            personalAuth.setUsername("harsha");
+            personalAuth.setPassword(passwordEncoder.encode("Harsha@14"));
+            personalAuth.setRole(UserAuth.Role.CUSTOMER);
+            personalAuth.setCustomer(personalCustomer);
+            userAuthRepo.save(personalAuth);
+            log.info("Created personal auth with username: {}", personalAuth.getUsername());
+
+            // Create accounts for personal customer
+            Account personalSavings = new Account();
+            personalSavings.setAccountNumber("789012345678");
+            personalSavings.setAccountType(Account.AccountType.SAVINGS);
+            personalSavings.setBalance(new BigDecimal("25000.00"));
+            personalSavings.setCustomer(personalCustomer);
+            accountRepo.save(personalSavings);
+
+            Account personalCurrent = new Account();
+            personalCurrent.setAccountNumber("890123456789");
+            personalCurrent.setAccountType(Account.AccountType.CURRENT);
+            personalCurrent.setBalance(new BigDecimal("5000.00"));
+            personalCurrent.setCustomer(personalCustomer);
+            accountRepo.save(personalCurrent);
+
+            log.info("Created 2 accounts for personal customer");
+        } else {
+            log.info("Personal customer already exists");
+        }
+
+        log.info("Sample data initialization completed!");
     }
 }

@@ -75,6 +75,13 @@ public class AccountService {
         return accountRepo.findByCustomerId(customerId);
     }
 
+    // 4️⃣ Get account by account number
+    @Cacheable(value = "accountByNumber", key = "#accountNumber")
+    public Account getAccountByNumber(String accountNumber) {
+        return accountRepo.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+    }
+
     // 4️⃣ Update account type (e.g., upgrade from SAVINGS to CURRENT)
     @CachePut(value = "accountById", key = "#accountId")
     @CacheEvict(value = "accountsByCustomer", key = "#result.customer.id")

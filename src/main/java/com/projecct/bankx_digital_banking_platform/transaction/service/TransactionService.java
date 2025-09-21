@@ -112,6 +112,10 @@ public class TransactionService {
         return transactionRepo.findAllByFromAccountIdOrToAccountId(accountId, accountId);
     }
 
+    public List<Transaction> getAllTransactions() {
+        return transactionRepo.findAll();
+    }
+
     @Cacheable(value = "transactionsByDate", key = "#accountId + '_' + #start.toString() + '_' + #end.toString()")
     public List<Transaction> getTransactionsByDateRange(Integer accountId, LocalDate start, LocalDate end) {
         return transactionRepo.findByAccountIdAndDateRange(accountId, start, end);

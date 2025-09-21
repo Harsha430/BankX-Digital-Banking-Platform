@@ -2,12 +2,18 @@ package com.projecct.bankx_digital_banking_platform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@SpringBootApplication(exclude = {RedisRepositoriesAutoConfiguration.class})
+@SpringBootApplication(exclude = {
+    RedisAutoConfiguration.class,
+    RedisReactiveAutoConfiguration.class,
+    RedisRepositoriesAutoConfiguration.class
+})
 @EnableScheduling
 @EnableCaching
 @EnableJpaRepositories

@@ -21,9 +21,7 @@ public class TransactionController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Transaction>> getAllTransactions() {
-        // For now, return empty list since we don't have a findAll method
-        // In a real implementation, you would add this method to the service
-        return ResponseEntity.ok(List.of());
+        return ResponseEntity.ok(transactionService.getAllTransactions());
     }
 
     @GetMapping("/reference/{referenceId}")

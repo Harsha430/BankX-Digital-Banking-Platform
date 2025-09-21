@@ -1,5 +1,6 @@
 package com.projecct.bankx_digital_banking_platform.transaction;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.projecct.bankx_digital_banking_platform.account.Account;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -21,7 +22,7 @@ public class Transaction {
     }
 
     public enum Status {
-        SUCCESS, FAILED, PENDING
+        PENDING, SUCCESS, FAILED
     }
 
     @Id
@@ -30,10 +31,12 @@ public class Transaction {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_account_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Account fromAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "to_account_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Account toAccount;
 
     @Column(precision = 19, scale = 2, nullable = false)

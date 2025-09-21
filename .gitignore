@@ -65,6 +65,19 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 
+# New Frontend
+frontend-new/node_modules/
+frontend-new/dist/
+frontend-new/build/
+frontend-new/.vite/
+frontend-new/.env.local
+frontend-new/.env.development.local
+frontend-new/.env.test.local
+frontend-new/.env.production.local
+frontend-new/npm-debug.log*
+frontend-new/yarn-debug.log*
+frontend-new/yarn-error.log*
+
 # Environment variables
 .env
 .env.local
@@ -158,3 +171,45 @@ public
 # Temporary folders
 tmp/
 temp/
+
+# Development scripts and batch files
+*.bat
+*.sh
+*.ps1
+start-*
+restart-*
+fix-*
+setup-*
+wait-*
+test-*
+clear-session.js
+
+# Temporary documentation files
+*_GUIDE.md
+*_FIX*.md
+*_FIXED.md
+SUCCESS_*.md
+RESTART_*.md
+CRITICAL_*.md
+FINAL_*.md
+PHONE_*.md
+PROFILE_*.md
+LOGIN_*.md
+REAL_*.md
+BACKEND_*.md
+FRONTEND_*.md
+GITHUB_*.md
+EMAIL_*.md
+CHANGELOG.md
+CONTRIBUTING.md
+HELP.md
+QUICK_START.md
+RUN_*.md
+START_*.md
+TROUBLESHOOTING.md
+
+# Test files
+test-*.html
+test-*.js
+test-*.ps1
+*.http

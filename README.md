@@ -110,7 +110,7 @@ mvn spring-boot:run
 ### 4. Frontend Setup
 ```bash
 # Navigate to frontend directory
-cd frontend
+cd frontend-new
 
 # Install dependencies
 npm install
@@ -124,22 +124,29 @@ npm run dev
 - **Backend API**: http://localhost:8080
 - **API Documentation**: http://localhost:8080/swagger-ui.html
 
-## 📋 Demo Credentials
+## � Getting Started
 
 ### Admin Account
 - **Email**: admin@bankx.com
 - **Password**: admin123
 
-### Test User Registration
-Use the registration form to create new customer accounts with:
-- Full name, email, phone
-- Username and password
-- Address information
+### User Registration
+Create new customer accounts using the registration form with:
+- Full name, email, phone number
+- Secure username and password
+- Complete address information
+
+### Features Available
+- **Account Management**: Create multiple account types (Savings, Current, Wallet)
+- **Transactions**: Deposit, withdraw, and transfer funds
+- **Real-time Dashboard**: View balances and recent transactions
+- **Dark Mode**: Professional dark theme interface
+- **Secure Authentication**: JWT-based login system
 
 ## 🏗️ Project Structure
 
 ```
-bankx-digital-banking-platform/
+BankX-Digital-Banking-Platform/
 ├── src/main/java/com/projecct/bankx_digital_banking_platform/
 │   ├── account/           # Account management
 │   ├── customer/          # Customer operations
@@ -147,14 +154,14 @@ bankx-digital-banking-platform/
 │   ├── security/          # Authentication & authorization
 │   ├── notification/      # Email services
 │   └── kafka/            # Event processing
-├── frontend/
+├── frontend-new/
 │   ├── src/
 │   │   ├── components/   # React components
-│   │   ├── services/     # API services
-│   │   ├── context/      # React context
+│   │   ├── pages/        # Page components
+│   │   ├── api.js        # API services
 │   │   └── assets/       # Static assets
 │   └── public/           # Public files
-└── docs/                 # Documentation
+└── docs/                 # API & Deployment docs
 ```
 
 ## 🔧 Configuration
@@ -229,7 +236,7 @@ Use the provided `test-backend.http` file with REST Client or Postman.
 mvn clean package -DskipTests
 
 # Frontend
-cd frontend
+cd frontend-new
 npm run build
 ```
 
@@ -268,8 +275,3 @@ For support and questions:
 ---
 
 **Built with ❤️ for modern digital banking**
-
-![GitHub stars](https://img.shields.io/github/stars/yourusername/bankx-digital-banking-platform?style=social)
-![GitHub forks](https://img.shields.io/github/forks/yourusername/bankx-digital-banking-platform?style=social)
-![GitHub issues](https://img.shields.io/github/issues/yourusername/bankx-digital-banking-platform)
-![GitHub license](https://img.shields.io/github/license/yourusername/bankx-digital-banking-platform)
