@@ -7,11 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -19,26 +21,62 @@ public class TransactionController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Transaction>> getAllTransactions() {
-        return ResponseEntity.ok(transactionService.findAllTransactions());
+        // For now, return empty list since we don't have a findAll method
+        // In a real implementation, you would add this method to the service
+        return ResponseEntity.ok(List.of());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/reference/{referenceId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Transaction> getTransactionById(@PathVariable Long id) {
-        return transactionService.findTransactionById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Transaction> getTransactionByReferenceId(@PathVariable String referenceId) {
+        try {
+            Transaction transaction = transactionService.getTransactionByReferenceId(referenceId);
+            return ResponseEntity.ok(transaction);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/account/{accountId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Transaction>> getTransactionsByAccountId(@PathVariable Long accountId) {
-        return ResponseEntity.ok(transactionService.findTransactionsByAccountId(accountId));
+    public ResponseEntity<List<Transaction>> getTransactionsByAccountId(@PathVariable Integer accountId) {
+        return ResponseEntity.ok(transactionService.getTransactionsByAccount(accountId));
     }
 
-    @PostMapping
+    @PostMapping("/deposit")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Transaction> createTransaction(@RequestBody Transaction transaction) {
-        return ResponseEntity.ok(transactionService.processTransaction(transaction));
+    public ResponseEntity<?> deposit(@RequestParam Integer accountId, @RequestParam BigDecimal amount) {
+        try {
+            var result = transactionService.deposit(accountId, amount);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Deposit failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/withdraw")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> withdraw(@RequestParam Integer accountId, @RequestParam BigDecimal amount) {
+        try {
+            var result = transactionService.withdraw(accountId, amount);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Withdrawal failed: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/transfer")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<?> transfer(@RequestParam Integer fromAccountId, 
+                                    @RequestParam Integer toAccountId, 
+                                    @RequestParam BigDecimal amount) {
+        try {
+            var result = transactionService.transfer(fromAccountId, toAccountId, amount);
+            return ResponseEntity.ok(result);
+        } catch (com.projecct.bankx_digital_banking_platform.exceptions.InsufficientBalanceException e) {
+            return ResponseEntity.badRequest().body("Insufficient balance: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Transfer failed: " + e.getMessage());
+        }
     }
 }

@@ -18,23 +18,41 @@ import {
   Smartphone,
   Globe
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import anime from 'animejs';
 import './Profile.css';
 
 const Profile = () => {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState('personal');
   
   const [userProfile, setUserProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@email.com',
-    phone: '+1 (555) 123-4567',
-    address: '123 Main Street, New York, NY 10001',
-    kycStatus: 'VERIFIED',
-    joinDate: '2023-01-15',
-    lastLogin: '2025-09-19T10:30:00Z',
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    kycStatus: 'PENDING',
+    joinDate: '',
+    lastLogin: '',
     profileImage: null
   });
+
+  // Update userProfile when user data is available
+  useEffect(() => {
+    if (user) {
+      setUserProfile({
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        address: user.address || '',
+        kycStatus: user.kycStatus || 'PENDING',
+        joinDate: user.createdAt || new Date().toISOString(),
+        lastLogin: new Date().toISOString(), // Current login
+        profileImage: user.profileImage || null
+      });
+    }
+  }, [user]);
 
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorAuth: true,
@@ -66,6 +84,7 @@ const Profile = () => {
   }, []);
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'Not available';
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
@@ -90,6 +109,24 @@ const Profile = () => {
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'preferences', label: 'Preferences', icon: Settings }
   ];
+
+  // Show loading state if user data is not available
+  if (!user) {
+    return (
+      <div className="profile-page">
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          height: '400px',
+          flexDirection: 'column'
+        }}>
+          <div className="loading-spinner" style={{ marginBottom: '16px' }}></div>
+          <p>Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profile-page">
@@ -205,53 +242,65 @@ const Profile = () => {
               
               <div className="form-grid">
                 <div className="form-group">
-                  <label>Full Name</label>
+                  <label style={{ color: '#64748b' }}>Full Name</label>
                   <div className="input-wrapper">
                     <User size={18} className="input-icon" />
                     <input 
                       type="text" 
-                      value={userProfile.name}
+                      value={userProfile.name || ''}
+                      onChange={(e) => setUserProfile({...userProfile, name: e.target.value})}
                       disabled={!isEditing}
                       className={isEditing ? 'editable' : ''}
+                      placeholder="Enter your full name"
+                      style={{ color: '#1e293b' }}
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label>Email Address</label>
+                  <label style={{ color: '#64748b' }}>Email Address</label>
                   <div className="input-wrapper">
                     <Mail size={18} className="input-icon" />
                     <input 
                       type="email" 
-                      value={userProfile.email}
+                      value={userProfile.email || ''}
+                      onChange={(e) => setUserProfile({...userProfile, email: e.target.value})}
                       disabled={!isEditing}
                       className={isEditing ? 'editable' : ''}
+                      placeholder="Enter your email address"
+                      style={{ color: '#1e293b' }}
                     />
                   </div>
                 </div>
 
                 <div className="form-group">
-                  <label>Phone Number</label>
+                  <label style={{ color: '#64748b' }}>Phone Number</label>
                   <div className="input-wrapper">
                     <Phone size={18} className="input-icon" />
                     <input 
                       type="tel" 
-                      value={userProfile.phone}
+                      value={userProfile.phone || ''}
+                      onChange={(e) => setUserProfile({...userProfile, phone: e.target.value})}
                       disabled={!isEditing}
                       className={isEditing ? 'editable' : ''}
+                      placeholder="Enter your phone number"
+                      style={{ color: '#1e293b' }}
                     />
                   </div>
                 </div>
 
                 <div className="form-group full-width">
-                  <label>Address</label>
+                  <label style={{ color: '#64748b' }}>Address</label>
                   <div className="input-wrapper">
                     <MapPin size={18} className="input-icon" />
                     <input 
                       type="text" 
-                      value={userProfile.address}
+                      value={userProfile.address || ''}
+                      onChange={(e) => setUserProfile({...userProfile, address: e.target.value})}
                       disabled={!isEditing}
                       className={isEditing ? 'editable' : ''}
+                      placeholder="Enter your address"
+                      style={{ color: '#1e293b' }}
                     />
                   </div>
                 </div>

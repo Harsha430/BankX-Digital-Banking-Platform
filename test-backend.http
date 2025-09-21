@@ -1,0 +1,23 @@
+### Test Backend Health
+GET http://localhost:8080/actuator/health
+
+### Test Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@bankx.com",
+  "password": "admin123"
+}
+
+### Test Get Customers (requires JWT token from login)
+GET http://localhost:8080/api/customers/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Test Get Accounts
+GET http://localhost:8080/api/accounts/customer/550e8400-e29b-41d4-a716-446655440000
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
+### Test Get Transactions
+GET http://localhost:8080/api/transactions
+Authorization: Bearer YOUR_JWT_TOKEN_HERE

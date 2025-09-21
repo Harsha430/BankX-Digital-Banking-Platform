@@ -15,6 +15,8 @@ import {
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, ArcElement, BarElement } from 'chart.js';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 import { accountAPI, transactionAPI } from '../services/api';
+import TransactionForm from './transactions/TransactionForm';
+import AccountForm from './accounts/AccountForm';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from './LoadingSpinner';
 import anime from 'animejs';
@@ -32,28 +34,37 @@ const Dashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [showAccountForm, setShowAccountForm] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        console.log('Dashboard - fetching data for user:', user);
+        
+        if (!user || !user.id) {
+          console.error('Dashboard - No user or user.id found');
+          setLoading(false);
+          return;
+        }
         
         // Fetch accounts and transactions
         const [accountsData, transactionsData] = await Promise.all([
-          accountAPI.getAccounts(),
-          transactionAPI.getTransactions()
+          accountAPI.getAccountsByCustomer(user.id),
+          transactionAPI.getAllTransactions()
         ]);
         
-        setAccounts(accountsData);
-        setTransactions(transactionsData.slice(0, 4)); // Show only recent 4
+        setAccounts(accountsData || []);
+        setTransactions((transactionsData || []).slice(0, 4)); // Show only recent 4
         
-        // Calculate stats
-        const totalBalance = accountsData.reduce((sum, acc) => sum + acc.balance, 0);
+        // Calculate stats - handle empty arrays
+        const totalBalance = (accountsData || []).reduce((sum, acc) => sum + (acc.balance || 0), 0);
         const currentMonth = new Date().getMonth();
         const currentYear = new Date().getFullYear();
         
-        const monthlyTransactions = transactionsData.filter(t => {
+        const monthlyTransactions = (transactionsData || []).filter(t => {
           const transactionDate = new Date(t.date);
           return transactionDate.getMonth() === currentMonth && 
                  transactionDate.getFullYear() === currentYear;
@@ -61,17 +72,17 @@ const Dashboard = () => {
         
         const monthlyIncome = monthlyTransactions
           .filter(t => t.type === 'CREDIT')
-          .reduce((sum, t) => sum + t.amount, 0);
+          .reduce((sum, t) => sum + (t.amount || 0), 0);
           
         const monthlyExpenses = monthlyTransactions
           .filter(t => t.type === 'DEBIT')
-          .reduce((sum, t) => sum + t.amount, 0);
+          .reduce((sum, t) => sum + (t.amount || 0), 0);
         
         setStats({
           totalBalance,
           monthlyIncome,
           monthlyExpenses,
-          totalAccounts: accountsData.length
+          totalAccounts: (accountsData || []).length
         });
         
       } catch (error) {
@@ -81,8 +92,68 @@ const Dashboard = () => {
       }
     };
 
+    if (user) {
+      fetchDashboardData();
+    }
+  }, [user]);
+
+  const handleTransactionComplete = (transaction) => {
+    // Refresh dashboard data after transaction
     fetchDashboardData();
-  }, []);
+    setShowTransactionForm(false);
+  };
+
+  const handleAccountCreated = (account) => {
+    // Refresh dashboard data after account creation
+    fetchDashboardData();
+    setShowAccountForm(false);
+  };
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch accounts and transactions
+      const [accountsData, transactionsData] = await Promise.all([
+        accountAPI.getAccountsByCustomer(user.id),
+        transactionAPI.getAllTransactions()
+      ]);
+      
+      setAccounts(accountsData);
+      setTransactions(transactionsData.slice(0, 4)); // Show only recent 4
+      
+      // Calculate stats
+      const totalBalance = accountsData.reduce((sum, acc) => sum + acc.balance, 0);
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      
+      const monthlyTransactions = transactionsData.filter(t => {
+        const transactionDate = new Date(t.date);
+        return transactionDate.getMonth() === currentMonth && 
+               transactionDate.getFullYear() === currentYear;
+      });
+      
+      const monthlyIncome = monthlyTransactions
+        .filter(t => t.type === 'CREDIT')
+        .reduce((sum, t) => sum + t.amount, 0);
+        
+      const monthlyExpenses = monthlyTransactions
+        .filter(t => t.type === 'DEBIT')
+        .reduce((sum, t) => sum + t.amount, 0);
+      
+      setStats({
+        totalBalance,
+        monthlyIncome,
+        monthlyExpenses,
+        totalAccounts: accountsData.length
+      });
+      
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading) {
@@ -192,6 +263,15 @@ const Dashboard = () => {
     return <LoadingSpinner size="large" text="Loading your dashboard..." />;
   }
 
+  if (!user) {
+    return (
+      <div style={{ padding: '20px', textAlign: 'center' }}>
+        <h2>Dashboard</h2>
+        <p>Loading user information...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       {/* Header */}
@@ -207,15 +287,66 @@ const Dashboard = () => {
         </div>
         <div className="header-actions">
           <motion.button 
+            className="action-btn secondary"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAccountForm(true)}
+          >
+            <CreditCard size={18} />
+            New Account
+          </motion.button>
+          <motion.button 
             className="action-btn primary"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => setShowTransactionForm(true)}
           >
             <Zap size={18} />
             Quick Transfer
           </motion.button>
         </div>
       </motion.div>
+
+      {/* Welcome Message for New Users */}
+      {accounts.length === 0 && (
+        <motion.div 
+          className="welcome-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          style={{
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            color: 'white',
+            padding: '30px',
+            borderRadius: '16px',
+            textAlign: 'center',
+            margin: '20px 0'
+          }}
+        >
+          <h2>🎉 Welcome to BankX, {user?.name?.split(' ')[0]}!</h2>
+          <p style={{ fontSize: '18px', marginBottom: '20px' }}>
+            Your account has been created successfully. Let's get you started with your first bank account!
+          </p>
+          <motion.button 
+            className="action-btn"
+            style={{
+              background: 'white',
+              color: '#667eea',
+              padding: '12px 24px',
+              border: 'none',
+              borderRadius: '8px',
+              fontWeight: '600',
+              cursor: 'pointer'
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAccountForm(true)}
+          >
+            <CreditCard size={18} style={{ marginRight: '8px' }} />
+            Create Your First Account
+          </motion.button>
+        </motion.div>
+      )}
 
       {/* Stats Grid */}
       <div className="stats-grid">
@@ -400,6 +531,24 @@ const Dashboard = () => {
           ))}
         </div>
       </motion.div>
+
+      {/* Transaction Form Modal */}
+      {showTransactionForm && (
+        <TransactionForm
+          user={user}
+          onTransactionComplete={handleTransactionComplete}
+          onClose={() => setShowTransactionForm(false)}
+        />
+      )}
+
+      {/* Account Form Modal */}
+      {showAccountForm && (
+        <AccountForm
+          user={user}
+          onAccountCreated={handleAccountCreated}
+          onClose={() => setShowAccountForm(false)}
+        />
+      )}
     </div>
   );
 };

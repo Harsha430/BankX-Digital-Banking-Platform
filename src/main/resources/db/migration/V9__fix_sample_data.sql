@@ -1,8 +1,12 @@
--- Insert sample customers
+-- Fix the failed sample data insertion
+-- First, let's clean up any partial data
+DELETE FROM customers WHERE email IN ('admin@bankx.com', 'jane.smith@email.com', 'mike.johnson@email.com');
+
+-- Insert sample customers with correct phone numbers (SMALLINT range: -32768 to 32767)
 INSERT INTO customers (id, name, email, phone, address, kyc_status, created_at) VALUES
-('550e8400-e29b-41d4-a716-446655440000', 'John Doe', 'admin@bankx.com', 5551234567, '123 Main Street, New York, NY 10001', 'VERIFIED', '2023-01-15 10:00:00'),
-('550e8400-e29b-41d4-a716-446655440001', 'Jane Smith', 'jane.smith@email.com', 5559876543, '456 Oak Avenue, Los Angeles, CA 90210', 'VERIFIED', '2023-02-20 14:30:00'),
-('550e8400-e29b-41d4-a716-446655440002', 'Mike Johnson', 'mike.johnson@email.com', 5555551234, '789 Pine Street, Chicago, IL 60601', 'PENDING', '2023-03-10 09:15:00');
+('550e8400-e29b-41d4-a716-446655440000', 'John Doe', 'admin@bankx.com', 12345, '123 Main Street, New York, NY 10001', 'VERIFIED', '2023-01-15 10:00:00'),
+('550e8400-e29b-41d4-a716-446655440001', 'Jane Smith', 'jane.smith@email.com', 23456, '456 Oak Avenue, Los Angeles, CA 90210', 'VERIFIED', '2023-02-20 14:30:00'),
+('550e8400-e29b-41d4-a716-446655440002', 'Mike Johnson', 'mike.johnson@email.com', 34567, '789 Pine Street, Chicago, IL 60601', 'PENDING', '2023-03-10 09:15:00');
 
 -- Insert credentials for customers
 INSERT INTO credentials (username, password, role, customer_id) VALUES

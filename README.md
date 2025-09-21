@@ -1,305 +1,275 @@
-# 🚀 BankX Digital Banking Platform
+# 🏦 BankX Digital Banking Platform
 
-<div align="center">
+A comprehensive full-stack digital banking application built with **Spring Boot** and **React**, featuring modern UI/UX, secure authentication, and real-time banking operations.
 
-![BankX Logo](frontend/public/bankx-icon.svg)
-
-**A Mind-Blowing, Cyberpunk-Inspired Digital Banking Platform**
-
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![React](https://img.shields.io/badge/React-18.2.0-blue.svg)](https://reactjs.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15+-blue.svg)](https://postgresql.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-
-[🎯 Demo](#-demo) • [✨ Features](#-features) • [🚀 Quick Start](#-quick-start) • [📱 Screenshots](#-screenshots) • [🛠️ Tech Stack](#️-tech-stack)
-
-</div>
-
----
-
-## 🎯 Demo
-
-**🌐 Live Demo**: [Coming Soon]  
-**🔑 Demo Credentials**: 
-- Email: `admin@bankx.com`
-- Password: `admin123`
+![BankX Banner](https://img.shields.io/badge/BankX-Digital%20Banking-blue?style=for-the-badge&logo=bank)
 
 ## ✨ Features
 
-### 🎨 **Stunning Cyberpunk UI**
-- **🌈 Neon Color Palette**: Purple, Cyan, Pink, Green gradients
-- **💎 Glass Morphism**: Translucent cards with blur effects  
-- **✨ Smooth Animations**: 60fps animations using Anime.js & Framer Motion
-- **📊 Interactive Charts**: Beautiful data visualizations with Chart.js
-- **📱 Mobile-First**: Responsive design that works on all devices
+### 🔐 Authentication & Security
+- **JWT-based authentication** with secure token management
+- **User registration** with email verification
+- **Password encryption** using BCrypt
+- **Role-based access control** (Admin/Customer)
+- **CORS protection** for secure API access
 
-### 🏦 **Complete Banking Features**
-- **💳 Account Management**: Multiple account types (Savings, Current, Wallet)
-- **📈 Transaction History**: Real-time transaction processing and tracking
-- **👤 Customer Onboarding**: KYC verification and user management
-- **🔐 Security**: JWT authentication with role-based access control
-- **📧 Notifications**: Event-driven email alerts via Kafka
-- **📊 Analytics**: Interactive dashboards with real-time data
+### 💳 Account Management
+- **Multiple account types**: Savings, Current, Digital Wallet
+- **Real-time balance tracking**
+- **Account creation** with initial deposit options
+- **Account type upgrades**
+- **Professional account cards** with modern UI
 
-### 🎭 **Animation Libraries**
-- **Anime.js**: Staggered animations, floating elements, shimmer effects
-- **Framer Motion**: Page transitions, hover effects, gesture interactions
-- **Chart.js**: Interactive line charts, doughnut charts, bar charts
-- **Custom CSS**: Neon glows, pulse animations, gradient shifts
+### 💰 Transaction System
+- **Deposit operations** with instant balance updates
+- **Withdrawal operations** with balance validation
+- **Inter-account transfers** with real-time processing
+- **Transaction history** with detailed records
+- **Transaction status tracking** (Success/Pending/Failed)
+
+### 📊 Dashboard & Analytics
+- **Real-time financial overview**
+- **Interactive charts** and visualizations
+- **Monthly income/expense tracking**
+- **Account balance trends**
+- **Transaction categorization**
+
+### 📧 Notifications
+- **Email notifications** for account creation
+- **Transaction alerts** via email
+- **Kafka-based event processing**
+- **Customizable notification preferences**
+
+### 🎨 Modern UI/UX
+- **Responsive design** for all devices
+- **Dark/Light theme** support
+- **Smooth animations** with Framer Motion
+- **Professional banking interface**
+- **Accessibility compliant**
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Java 17** - Modern Java features
+- **Spring Boot 3.x** - Enterprise framework
+- **Spring Security** - Authentication & authorization
+- **Spring Data JPA** - Database operations
+- **PostgreSQL** - Primary database
+- **Redis** - Caching layer
+- **Apache Kafka** - Event streaming
+- **JWT** - Token-based authentication
+- **Maven** - Dependency management
+
+### Frontend
+- **React 18** - Modern UI library
+- **Vite** - Fast build tool
+- **Axios** - HTTP client
+- **React Router** - Navigation
+- **Framer Motion** - Animations
+- **Chart.js** - Data visualization
+- **CSS3** - Modern styling
+
+### DevOps & Tools
+- **Docker** - Containerization
+- **Git** - Version control
+- **GitHub Actions** - CI/CD (planned)
+- **Postman** - API testing
 
 ## 🚀 Quick Start
 
-### 📋 Prerequisites
+### Prerequisites
 - **Java 17+**
-- **Node.js 18+**
-- **PostgreSQL 15+**
-- **Maven 3.8+**
+- **Node.js 16+**
+- **PostgreSQL 12+**
+- **Maven 3.6+**
+- **Git**
 
-### ⚡ 5-Minute Setup
-
-1. **📥 Clone the repository**
-   ```bash
-   git clone https://github.com/Harsha430/BankX_Digital_Banking_Platform.git
-   cd BankX_Digital_Banking_Platform
-   ```
-
-2. **🗄️ Setup Database**
-   ```bash
-   # Create PostgreSQL database
-   createdb BankX
-   ```
-
-3. **🔧 Start Backend**
-   ```bash
-   # Run Spring Boot application
-   ./mvnw spring-boot:run
-   ```
-
-4. **🎨 Start Frontend**
-   ```bash
-   # Navigate to frontend and install dependencies
-   cd frontend
-   npm install --legacy-peer-deps
-   
-   # Start development server
-   npm run dev
-   ```
-
-5. **🌐 Access Application**
-   - **Frontend**: http://localhost:5173
-   - **Backend API**: http://localhost:8080
-   - **Login**: admin@bankx.com / admin123
-
-## 📱 Screenshots
-
-### 🔐 Login Page
-![Login Page](docs/screenshots/login.png)
-*Cyberpunk-inspired login with animated backgrounds*
-
-### 📊 Dashboard
-![Dashboard](docs/screenshots/dashboard.png)
-*Interactive charts and real-time statistics*
-
-### 💳 Accounts
-![Accounts](docs/screenshots/accounts.png)
-*3D gradient cards with smooth animations*
-
-### 📈 Transactions
-![Transactions](docs/screenshots/transactions.png)
-*Advanced filtering with beautiful transaction cards*
-
-## 🛠️ Tech Stack
-
-### 🏗️ **Backend**
-- **Spring Boot 3.5.5** - Modern Java framework
-- **PostgreSQL** - Robust relational database
-- **Spring Security** - JWT authentication & authorization
-- **Spring Data JPA** - Data persistence layer
-- **Flyway** - Database migration management
-- **Redis** - Caching layer
-- **Apache Kafka** - Event streaming platform
-- **Spring Mail** - Email notifications
-
-### 🎨 **Frontend**
-- **React 18** - Modern UI library with hooks
-- **Vite** - Lightning-fast build tool
-- **Framer Motion** - Production-ready animations
-- **Anime.js** - Lightweight animation library
-- **Chart.js** - Flexible charting library
-- **Lucide React** - Beautiful icon library
-- **React Router** - Client-side routing
-- **Axios** - HTTP client for API calls
-
-### 🎯 **Key Integrations**
-- **JWT Authentication** - Secure token-based auth
-- **Real-time Charts** - Live data visualization
-- **Responsive Design** - Mobile-first approach
-- **Event-Driven Architecture** - Kafka messaging
-- **Audit Logging** - Complete transaction trails
-
-## 📁 Project Structure
-
-```
-BankX_Digital_Banking_Platform/
-├── 🏗️ Backend (Spring Boot)
-│   ├── src/main/java/com/projecct/bankx_digital_banking_platform/
-│   │   ├── 💳 account/          # Account management
-│   │   ├── 👤 customer/         # Customer operations  
-│   │   ├── 📈 transaction/      # Transaction processing
-│   │   ├── 🔐 security/         # Authentication & authorization
-│   │   ├── 📧 notification/     # Email services
-│   │   ├── 📊 audit/           # Audit logging
-│   │   └── ⚙️ common/          # Shared utilities
-│   └── src/main/resources/
-│       ├── 🗄️ db/migration/    # Database migrations
-│       └── ⚙️ application.properties
-├── 🎨 Frontend (React + Vite)
-│   ├── src/
-│   │   ├── 🧩 components/      # UI components
-│   │   ├── 🎭 context/         # React context
-│   │   ├── 🔧 services/        # API services
-│   │   └── 🎨 styles/          # CSS animations
-│   └── public/                 # Static assets
-└── 📚 docs/                    # Documentation
+### 1. Clone Repository
+```bash
+git clone https://github.com/yourusername/bankx-digital-banking-platform.git
+cd bankx-digital-banking-platform
 ```
 
-## 🎪 Sample Data
+### 2. Database Setup
+```sql
+-- Create PostgreSQL database
+CREATE DATABASE "BankX";
 
-### 👤 **Demo User (John Doe)**
+-- Update credentials in src/main/resources/application.properties
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
+
+### 3. Backend Setup
+```bash
+# Install dependencies and start backend
+mvn clean install
+mvn spring-boot:run
+```
+
+### 4. Frontend Setup
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### 5. Access Application
+- **Frontend**: http://localhost:5173
+- **Backend API**: http://localhost:8080
+- **API Documentation**: http://localhost:8080/swagger-ui.html
+
+## 📋 Demo Credentials
+
+### Admin Account
 - **Email**: admin@bankx.com
 - **Password**: admin123
-- **KYC Status**: ✅ Verified
-- **Total Balance**: $146,111.40
 
-### 💳 **4 Bank Accounts**
-1. **Primary Savings** (****1234) - $85,430.50
-2. **Business Current** (****5678) - $12,750.25
-3. **Digital Wallet** (****9012) - $2,249.75
-4. **Emergency Fund** (****3456) - $45,680.90
+### Test User Registration
+Use the registration form to create new customer accounts with:
+- Full name, email, phone
+- Username and password
+- Address information
 
-### 📊 **10+ Sample Transactions**
-- ✅ Salary deposits and cashback rewards
-- ❌ Shopping, subscriptions, and bill payments
-- 🔄 Inter-account transfers
-- 📈 Success, pending, and failed statuses
+## 🏗️ Project Structure
 
-## 🎨 Animation Showcase
-
-### ✨ **Anime.js Features**
-```javascript
-// Staggered card animations
-anime({
-  targets: '.account-card',
-  translateY: [50, 0],
-  opacity: [0, 1],
-  delay: anime.stagger(150),
-  duration: 800,
-  easing: 'easeOutExpo'
-});
+```
+bankx-digital-banking-platform/
+├── src/main/java/com/projecct/bankx_digital_banking_platform/
+│   ├── account/           # Account management
+│   ├── customer/          # Customer operations
+│   ├── transaction/       # Transaction processing
+│   ├── security/          # Authentication & authorization
+│   ├── notification/      # Email services
+│   └── kafka/            # Event processing
+├── frontend/
+│   ├── src/
+│   │   ├── components/   # React components
+│   │   ├── services/     # API services
+│   │   ├── context/      # React context
+│   │   └── assets/       # Static assets
+│   └── public/           # Public files
+└── docs/                 # Documentation
 ```
 
-### 🎭 **Framer Motion Magic**
-```javascript
-// Smooth page transitions
-<motion.div
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.6 }}
->
+## 🔧 Configuration
+
+### Email Notifications
+```properties
+# Configure SMTP settings in application.properties
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=your-email@gmail.com
+spring.mail.password=your-app-password
 ```
 
-### 📊 **Chart.js Visualizations**
-- **Balance Trends**: Gradient line charts
-- **Expense Breakdown**: Interactive doughnut charts  
-- **Income Analysis**: Animated bar charts
-- **Real-time Updates**: Live data synchronization
+### Database Configuration
+```properties
+# PostgreSQL settings
+spring.datasource.url=jdbc:postgresql://localhost:5432/BankX
+spring.datasource.username=your_username
+spring.datasource.password=your_password
+```
 
-## 🔧 Development
+### JWT Configuration
+```properties
+# JWT settings
+app.jwt.secret=your-secret-key
+app.jwt.expiration=86400000
+```
 
-### 🏃‍♂️ **Running in Development**
+## 📚 API Documentation
+
+### Authentication Endpoints
+- `POST /api/auth/login` - User login
+- `POST /api/auth/logout` - User logout
+- `GET /api/auth/me` - Get current user
+
+### Customer Endpoints
+- `POST /api/customers/register` - Register new customer
+- `GET /api/customers/{id}` - Get customer details
+
+### Account Endpoints
+- `GET /api/accounts/customer/{customerId}` - Get customer accounts
+- `POST /api/accounts/customer/{customerId}` - Create new account
+- `PUT /api/accounts/{id}/type` - Update account type
+
+### Transaction Endpoints
+- `POST /api/transactions/deposit` - Deposit money
+- `POST /api/transactions/withdraw` - Withdraw money
+- `POST /api/transactions/transfer` - Transfer between accounts
+- `GET /api/transactions/account/{accountId}` - Get account transactions
+
+## 🧪 Testing
+
+### Backend Tests
 ```bash
-# Backend (Terminal 1)
-./mvnw spring-boot:run
-
-# Frontend (Terminal 2)  
-cd frontend && npm run dev
+mvn test
 ```
 
-### 🧪 **Testing**
+### Frontend Tests
 ```bash
-# Backend tests
-./mvnw test
-
-# Frontend tests
-cd frontend && npm test
+cd frontend
+npm test
 ```
 
-### 📦 **Building for Production**
+### API Testing
+Use the provided `test-backend.http` file with REST Client or Postman.
+
+## 🚀 Deployment
+
+### Production Build
 ```bash
 # Backend
-./mvnw clean package
+mvn clean package -DskipTests
 
 # Frontend
-cd frontend && npm run build
+cd frontend
+npm run build
 ```
 
-## 🌟 What Makes This Special
-
-### 🎨 **Visual Excellence**
-- **Cyberpunk Aesthetic**: Futuristic neon design
-- **Smooth Animations**: Professional-grade transitions
-- **Interactive Elements**: Engaging user experience
-- **Modern UI/UX**: Clean, intuitive interface
-
-### ⚡ **Performance**
-- **60fps Animations**: GPU-accelerated transforms
-- **Optimized Bundles**: Tree-shaking and code splitting
-- **Fast Loading**: Minimal bundle sizes
-- **Responsive**: Works perfectly on all devices
-
-### 🔒 **Security**
-- **JWT Authentication**: Secure token-based auth
-- **Password Encryption**: BCrypt hashing
-- **Role-based Access**: Granular permissions
-- **Audit Trails**: Complete transaction logging
+### Docker Deployment
+```bash
+# Build and run with Docker Compose
+docker-compose up -d
+```
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
-
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
-
-**Harsha Srikarthikeya Thumuluri**
-- GitHub: [@Harsha430](https://github.com/Harsha430)
-- Email: harshasrikarthikeyathumuluri@gmail.com
-
 ## 🙏 Acknowledgments
 
-- **Spring Boot Team** - Amazing framework
-- **React Team** - Powerful UI library  
-- **Anime.js** - Smooth animations
-- **Chart.js** - Beautiful charts
-- **Framer Motion** - Professional animations
+- **Spring Boot** team for the excellent framework
+- **React** team for the powerful UI library
+- **PostgreSQL** for reliable database management
+- **Apache Kafka** for event streaming capabilities
+
+## 📞 Support
+
+For support and questions:
+- Create an [Issue](https://github.com/yourusername/bankx-digital-banking-platform/issues)
+- Check the [Documentation](docs/)
+- Review [Troubleshooting Guide](TROUBLESHOOTING.md)
 
 ---
 
-<div align="center">
+**Built with ❤️ for modern digital banking**
 
-**🎉 Built with ❤️ for the future of digital banking**
-
-*Experience the most stunning banking UI ever created!*
-
-[![⭐ Star this repo](https://img.shields.io/github/stars/Harsha430/BankX_Digital_Banking_Platform?style=social)](https://github.com/Harsha430/BankX_Digital_Banking_Platform)
-
-</div>
-
+![GitHub stars](https://img.shields.io/github/stars/yourusername/bankx-digital-banking-platform?style=social)
+![GitHub forks](https://img.shields.io/github/forks/yourusername/bankx-digital-banking-platform?style=social)
+![GitHub issues](https://img.shields.io/github/issues/yourusername/bankx-digital-banking-platform)
+![GitHub license](https://img.shields.io/github/license/yourusername/bankx-digital-banking-platform)

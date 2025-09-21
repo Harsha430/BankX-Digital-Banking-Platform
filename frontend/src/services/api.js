@@ -230,71 +230,267 @@ const mockData = {
   }
 };
 
+// Test backend connection
+export const testAPI = {
+  healthCheck: async () => {
+    try {
+      // Try the simplest ping endpoint first
+      const response = await axios.get('http://localhost:8080/ping');
+      return response.data;
+    } catch (error) {
+      console.error('Ping failed:', error);
+      // Try the health endpoint
+      try {
+        const response = await axios.get('http://localhost:8080/health');
+        return response.data;
+      } catch (healthError) {
+        console.error('Health check also failed:', healthError);
+        // Try the API endpoint as last resort
+        try {
+          const response = await api.get('/test/health');
+          return response.data;
+        } catch (apiError) {
+          console.error('All health checks failed:', apiError);
+          throw error;
+        }
+      }
+    }
+  }
+};
+
 // API functions
 export const authAPI = {
   login: async (email, password) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    if (email === 'admin@bankx.com' && password === 'admin123') {
+    try {
+      console.log('Attempting login with:', { email, password: '***' });
+      const response = await api.post('/auth/login', { email, password });
+      console.log('Login response:', response.data);
       return {
         success: true,
-        user: mockData.user,
-        token: 'mock-jwt-token-' + Date.now()
+        user: response.data.user,
+        token: response.data.token,
+        message: response.data.message
       };
+    } catch (error) {
+      console.error('Login error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      throw new Error(error.response?.data || 'Invalid credentials');
     }
-    
-    throw new Error('Invalid credentials');
+  },
+
+  logout: async () => {
+    try {
+      await api.post('/auth/logout');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return { success: true };
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear local storage even if API call fails
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return { success: true };
+    }
+  },
+
+  getCurrentUser: async () => {
+    try {
+      const response = await api.get('/auth/me');
+      return response.data;
+    } catch (error) {
+      console.error('Get current user error:', error);
+      throw error;
+    }
+  },
+
+  register: async (userData) => {
+    try {
+      console.log('Attempting registration with:', userData);
+      const response = await api.post('/customers/register', userData);
+      console.log('Registration response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Registration error:', error);
+      console.error('Error response:', error.response?.data);
+      console.error('Error status:', error.response?.status);
+      console.error('Error headers:', error.response?.headers);
+      
+      let errorMessage = 'Registration failed';
+      if (error.response?.status === 403) {
+        errorMessage = 'Registration is not allowed. Please check server configuration.';
+      } else if (error.response?.data) {
+        errorMessage = typeof error.response.data === 'string' ? error.response.data : JSON.stringify(error.response.data);
+      }
+      
+      throw new Error(errorMessage);
+    }
   }
 };
 
 export const accountAPI = {
-  getAccounts: async () => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return mockData.accounts;
+  getAccountsByCustomer: async (customerId) => {
+    try {
+      console.log('Fetching accounts for customer:', customerId);
+      const response = await api.get(`/accounts/customer/${customerId}`);
+      console.log('Accounts response:', response.data);
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      console.error('Error details:', error.response?.data);
+      // Return empty array instead of mock data for new users
+      return [];
+    }
   },
   
   getAccountById: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockData.accounts.find(acc => acc.id === id);
+    try {
+      console.log('Fetching account by ID:', id);
+      const response = await api.get(`/accounts/${id}`);
+      console.log('Account response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching account:', error);
+      console.error('Error details:', error.response?.data);
+      return null;
+    }
+  },
+
+  createAccount: async (customerId, accountType, initialBalance = 0) => {
+    try {
+      const response = await api.post(`/accounts/customer/${customerId}`, null, {
+        params: { accountType, initialBalance }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error creating account:', error);
+      throw new Error(error.response?.data || 'Failed to create account');
+    }
+  },
+
+  updateAccountType: async (accountId, accountType) => {
+    try {
+      const response = await api.put(`/accounts/${accountId}/type`, null, {
+        params: { accountType }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating account type:', error);
+      throw new Error(error.response?.data || 'Failed to update account type');
+    }
+  },
+
+  deleteAccount: async (accountId) => {
+    try {
+      await api.delete(`/accounts/${accountId}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      throw new Error(error.response?.data || 'Failed to delete account');
+    }
   }
 };
 
 export const transactionAPI = {
-  getTransactions: async (filters = {}) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    let transactions = [...mockData.transactions];
-    
-    if (filters.type && filters.type !== 'ALL') {
-      transactions = transactions.filter(t => t.type === filters.type);
+  getAllTransactions: async () => {
+    try {
+      console.log('Fetching all transactions');
+      const response = await api.get('/transactions');
+      console.log('Transactions response:', response.data);
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching all transactions:', error);
+      console.error('Error details:', error.response?.data);
+      // Return empty array for new users instead of mock data
+      return [];
     }
-    
-    if (filters.search) {
-      transactions = transactions.filter(t => 
-        t.description.toLowerCase().includes(filters.search.toLowerCase()) ||
-        t.id.toLowerCase().includes(filters.search.toLowerCase())
-      );
+  },
+
+  getTransactionsByAccount: async (accountId) => {
+    try {
+      console.log('Fetching transactions for account:', accountId);
+      const response = await api.get(`/transactions/account/${accountId}`);
+      console.log('Account transactions response:', response.data);
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching account transactions:', error);
+      console.error('Error details:', error.response?.data);
+      return [];
     }
-    
-    return transactions;
   },
   
-  getTransactionById: async (id) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockData.transactions.find(t => t.id === id);
+  getTransactionByReference: async (referenceId) => {
+    try {
+      console.log('Fetching transaction by reference:', referenceId);
+      const response = await api.get(`/transactions/reference/${referenceId}`);
+      console.log('Transaction response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching transaction:', error);
+      console.error('Error details:', error.response?.data);
+      return null;
+    }
+  },
+
+  deposit: async (accountId, amount) => {
+    try {
+      const response = await api.post('/transactions/deposit', null, {
+        params: { accountId, amount }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Deposit error:', error);
+      throw new Error(error.response?.data || 'Deposit failed');
+    }
+  },
+
+  withdraw: async (accountId, amount) => {
+    try {
+      const response = await api.post('/transactions/withdraw', null, {
+        params: { accountId, amount }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Withdrawal error:', error);
+      throw new Error(error.response?.data || 'Withdrawal failed');
+    }
+  },
+
+  transfer: async (fromAccountId, toAccountId, amount) => {
+    try {
+      const response = await api.post('/transactions/transfer', null, {
+        params: { fromAccountId, toAccountId, amount }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Transfer error:', error);
+      throw new Error(error.response?.data || 'Transfer failed');
+    }
   }
 };
 
-export const userAPI = {
-  getProfile: async () => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return mockData.user;
+export const customerAPI = {
+  getCustomerById: async (customerId) => {
+    try {
+      console.log('Fetching customer by ID:', customerId);
+      const response = await api.get(`/customers/${customerId}`);
+      console.log('Customer response:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching customer:', error);
+      console.error('Error details:', error.response?.data);
+      return null;
+    }
   },
   
-  updateProfile: async (userData) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return { ...mockData.user, ...userData };
+  deleteCustomer: async (customerId) => {
+    try {
+      await api.delete(`/customers/${customerId}`);
+      return { success: true };
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      throw new Error(error.response?.data || 'Failed to delete customer');
+    }
   }
 };
 

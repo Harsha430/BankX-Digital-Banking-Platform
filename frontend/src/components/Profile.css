@@ -25,17 +25,19 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  color: #1e293b;
 }
 
 /* Profile Card */
 .profile-card {
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 24px;
   padding: 2.5rem;
   position: relative;
   overflow: hidden;
+  color: #1e293b;
 }
 
 .profile-card::before {
@@ -128,12 +130,12 @@
 .profile-info h2 {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1e293b;
   margin-bottom: 0.5rem;
 }
 
 .profile-email {
-  color: var(--text-muted);
+  color: #64748b;
   font-size: 1.1rem;
   margin-bottom: 1rem;
 }
@@ -174,7 +176,7 @@
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: #1e293b;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -208,14 +210,14 @@
 
 .stat-label {
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: #64748b;
   font-weight: 500;
 }
 
 .stat-value {
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1e293b;
 }
 
 .stat-value.active {
@@ -241,7 +243,7 @@
   background: transparent;
   border: none;
   border-radius: 12px;
-  color: var(--text-muted);
+  color: #64748b;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -251,7 +253,7 @@
 
 .tab-btn:hover {
   background: rgba(255, 255, 255, 0.05);
-  color: var(--text-primary);
+  color: #1e293b;
 }
 
 .tab-btn.active {
@@ -262,17 +264,18 @@
 
 /* Profile Content */
 .profile-content {
-  background: var(--card-bg);
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 20px;
   padding: 2.5rem;
+  color: #1e293b;
 }
 
 .profile-content h3 {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1e293b;
   margin-bottom: 2rem;
 }
 
@@ -296,7 +299,7 @@
 
 .form-group label {
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #64748b;
   font-size: 0.9rem;
 }
 
@@ -315,10 +318,10 @@
 .input-wrapper input {
   width: 100%;
   padding: 1rem 1rem 1rem 3rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: #1e293b !important;
   font-size: 1rem;
   transition: all 0.3s ease;
 }
@@ -431,13 +434,13 @@
 .notification-info h4 {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1e293b;
   margin-bottom: 0.25rem;
 }
 
 .security-info p,
 .notification-info p {
-  color: var(--text-muted);
+  color: #64748b;
   font-size: 0.9rem;
 }
 
@@ -503,7 +506,7 @@ input:checked + .toggle-slider:before {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: #1e293b;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -530,7 +533,7 @@ input:checked + .toggle-slider:before {
 
 .preference-item label {
   font-weight: 600;
-  color: var(--text-secondary);
+  color: #64748b;
   font-size: 0.9rem;
 }
 
@@ -553,7 +556,7 @@ input:checked + .toggle-slider:before {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
-  color: var(--text-primary);
+  color: #1e293b;
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;

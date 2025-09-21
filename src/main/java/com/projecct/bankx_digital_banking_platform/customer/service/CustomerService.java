@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,10 +20,12 @@ public class CustomerService {
 
     private final CustomerRepo customerRepo;
     private final UserAuthRepo userAuthRepo;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepo customerRepo, UserAuthRepo userAuthRepo) {
+    public CustomerService(CustomerRepo customerRepo, UserAuthRepo userAuthRepo, PasswordEncoder passwordEncoder) {
         this.customerRepo = customerRepo;
         this.userAuthRepo = userAuthRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // 1️⃣ Create new customer with UserAuth
@@ -39,7 +42,7 @@ public class CustomerService {
 
         UserAuth userAuth = new UserAuth();
         userAuth.setUsername(request.getUsername());
-        userAuth.setPassword(request.getPassword()); // hash in real apps!
+        userAuth.setPassword(passwordEncoder.encode(request.getPassword())); // Hash the password
         userAuth.setRole(Role.CUSTOMER);
         userAuth.setCustomer(customer);
 
@@ -72,7 +75,7 @@ public class CustomerService {
     // 5️⃣ Update customer info (refresh cache)
     @Transactional
     @CachePut(value = "customersById", key = "#customerId")
-    public Customer updateCustomerInfo(UUID customerId, String name, String email, Short phone, String address) {
+    public Customer updateCustomerInfo(UUID customerId, String name, String email, String phone, String address) {
         Customer customer = getCustomerById(customerId);
         if (name != null) customer.setName(name);
         if (email != null) customer.setEmail(email);

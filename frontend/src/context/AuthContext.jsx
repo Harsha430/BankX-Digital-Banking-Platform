@@ -41,30 +41,27 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password) => {
+  const login = (userData) => {
+    setUser(userData);
+    // Token is already stored by LoginForm component
+    const savedToken = localStorage.getItem('token');
+    setToken(savedToken);
+  };
+
+  const logout = async () => {
     try {
       // Import authAPI dynamically to avoid circular dependency
       const { authAPI } = await import('../services/api');
-      const result = await authAPI.login(email, password);
-      
-      setUser(result.user);
-      setToken(result.token);
-      localStorage.setItem('token', result.token);
-      localStorage.setItem('user', JSON.stringify(result.user));
-      
-      return { success: true, user: result.user };
+      await authAPI.logout();
     } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: error.message || 'Login failed' };
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      delete axios.defaults.headers.common['Authorization'];
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    delete axios.defaults.headers.common['Authorization'];
   };
 
   const value = {

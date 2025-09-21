@@ -15,6 +15,8 @@ import {
   Unlock
 } from 'lucide-react';
 import { accountAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import AccountForm from './accounts/AccountForm';
 import LoadingSpinner from './LoadingSpinner';
 import anime from 'animejs';
 import './Accounts.css';
@@ -24,12 +26,14 @@ const Accounts = () => {
   const [selectedAccount, setSelectedAccount] = useState(null);
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showAccountForm, setShowAccountForm] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
         setLoading(true);
-        const accountsData = await accountAPI.getAccounts();
+        const accountsData = await accountAPI.getAccountsByCustomer(user.id);
         setAccounts(accountsData);
       } catch (error) {
         console.error('Error fetching accounts:', error);
@@ -39,7 +43,12 @@ const Accounts = () => {
     };
 
     fetchAccounts();
-  }, []);
+  }, [user]);
+
+  const handleAccountCreated = (newAccount) => {
+    setAccounts(prev => [...prev, newAccount]);
+    setShowAccountForm(false);
+  };
 
   useEffect(() => {
     if (!loading && accounts.length > 0) {
@@ -140,6 +149,7 @@ const Accounts = () => {
             className="action-btn primary"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAccountForm(true)}
           >
             <Plus size={18} />
             Add Account
@@ -163,7 +173,7 @@ const Accounts = () => {
             </div>
           </div>
           <div className="summary-value">
-            {formatBalance(accounts.reduce((sum, acc) => sum + acc.balance, 0))}
+            ₹{formatBalance(accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0))}
           </div>
           <p>Across all accounts</p>
         </div>
@@ -185,11 +195,11 @@ const Accounts = () => {
             <h3>Monthly Activity</h3>
             <div className="activity-trend">
               <ArrowUpRight size={16} />
-              <span>269 transactions</span>
+              <span>This month</span>
             </div>
           </div>
           <div className="summary-value">
-            {accounts.reduce((sum, acc) => sum + acc.monthlyTransactions, 0)}
+            {accounts.reduce((sum, acc) => sum + (acc.monthlyTransactions || 0), 0)}
           </div>
           <p>This month</p>
         </div>
@@ -202,7 +212,41 @@ const Accounts = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        {accounts.map((account, index) => (
+        {accounts.length === 0 ? (
+          <div style={{
+            gridColumn: '1 / -1',
+            textAlign: 'center',
+            padding: '60px 20px',
+            background: 'linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%)',
+            borderRadius: '16px',
+            margin: '20px 0'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏦</div>
+            <h3 style={{ color: '#4338ca', marginBottom: '16px' }}>No Accounts Yet</h3>
+            <p style={{ color: '#6366f1', marginBottom: '24px' }}>
+              Create your first bank account to start your digital banking journey!
+            </p>
+            <motion.button 
+              className="action-btn primary"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAccountForm(true)}
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              <Plus size={18} style={{ marginRight: '8px' }} />
+              Create Your First Account
+            </motion.button>
+          </div>
+        ) : (
+          accounts.map((account, index) => (
           <motion.div 
             key={account.id}
             className={`account-card ${account.cardColor}`}
@@ -289,9 +333,11 @@ const Accounts = () => {
             {/* Card Glow Effect */}
             <div className="card-glow"></div>
           </motion.div>
-        ))}
+          ))
+        )}
 
-        {/* Add New Account Card */}
+        {/* Add New Account Card - only show if user has accounts */}
+        {accounts.length > 0 && (
         <motion.div 
           className="account-card add-account"
           initial={{ opacity: 0, y: 30 }}
@@ -309,11 +355,13 @@ const Accounts = () => {
               className="add-account-btn"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              onClick={() => setShowAccountForm(true)}
             >
               Get Started
             </motion.button>
           </div>
         </motion.div>
+        )}
       </motion.div>
 
       {/* Quick Actions */}
@@ -359,6 +407,15 @@ const Accounts = () => {
           </motion.button>
         </div>
       </motion.div>
+
+      {/* Account Form Modal */}
+      {showAccountForm && (
+        <AccountForm
+          user={user}
+          onAccountCreated={handleAccountCreated}
+          onClose={() => setShowAccountForm(false)}
+        />
+      )}
     </div>
   );
 };

@@ -32,7 +32,7 @@ public class Customer {
     private String name;
     @Email
     private String email;
-    private Short phone;
+    private String phone;
     private String address;
     @Enumerated(EnumType.STRING)
     private Status kycStatus;

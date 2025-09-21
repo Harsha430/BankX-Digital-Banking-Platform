@@ -14,6 +14,8 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { transactionAPI } from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import TransactionForm from './transactions/TransactionForm';
 import LoadingSpinner from './LoadingSpinner';
 import anime from 'animejs';
 import './Transactions.css';
@@ -24,15 +26,14 @@ const Transactions = () => {
   const [dateRange, setDateRange] = useState('7d');
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
         setLoading(true);
-        const transactionsData = await transactionAPI.getTransactions({
-          type: filterType,
-          search: searchTerm
-        });
+        const transactionsData = await transactionAPI.getAllTransactions();
         setTransactions(transactionsData);
       } catch (error) {
         console.error('Error fetching transactions:', error);
@@ -42,7 +43,25 @@ const Transactions = () => {
     };
 
     fetchTransactions();
-  }, [filterType, searchTerm]);
+  }, []);
+
+  const handleTransactionComplete = (transaction) => {
+    // Refresh transactions after new transaction
+    fetchTransactions();
+    setShowTransactionForm(false);
+  };
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const transactionsData = await transactionAPI.getAllTransactions();
+      setTransactions(transactionsData);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading && transactions.length > 0) {
@@ -127,6 +146,15 @@ const Transactions = () => {
             <Download size={18} />
             Export
           </motion.button>
+          <motion.button 
+            className="action-btn primary"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowTransactionForm(true)}
+          >
+            <ArrowUpRight size={18} />
+            New Transaction
+          </motion.button>
         </div>
       </motion.div>
 
@@ -192,7 +220,9 @@ const Transactions = () => {
           </div>
           <div className="stat-content">
             <span className="stat-label">Total Credits</span>
-            <span className="stat-value credit">+$2,625.00</span>
+            <span className="stat-value credit">
+              +₹{transactions.filter(t => t.type === 'CREDIT').reduce((sum, t) => sum + (t.amount || 0), 0).toFixed(2)}
+            </span>
           </div>
         </div>
 
@@ -202,7 +232,9 @@ const Transactions = () => {
           </div>
           <div className="stat-content">
             <span className="stat-label">Total Debits</span>
-            <span className="stat-value debit">-$586.23</span>
+            <span className="stat-value debit">
+              -₹{transactions.filter(t => t.type === 'DEBIT').reduce((sum, t) => sum + (t.amount || 0), 0).toFixed(2)}
+            </span>
           </div>
         </div>
 
@@ -212,7 +244,9 @@ const Transactions = () => {
           </div>
           <div className="stat-content">
             <span className="stat-label">Transfers</span>
-            <span className="stat-value transfer">$1,000.00</span>
+            <span className="stat-value transfer">
+              ₹{transactions.filter(t => t.type === 'TRANSFER').reduce((sum, t) => sum + (t.amount || 0), 0).toFixed(2)}
+            </span>
           </div>
         </div>
       </motion.div>
@@ -224,7 +258,38 @@ const Transactions = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        {filteredTransactions.map((transaction, index) => (
+        {filteredTransactions.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '60px 20px',
+            background: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+            borderRadius: '16px',
+            margin: '20px 0'
+          }}>
+            <h3 style={{ color: '#64748b', marginBottom: '16px' }}>No Transactions Yet</h3>
+            <p style={{ color: '#94a3b8', marginBottom: '24px' }}>
+              Create an account and start making transactions to see them here.
+            </p>
+            <motion.button 
+              className="action-btn primary"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowTransactionForm(true)}
+              style={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 24px',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer'
+              }}
+            >
+              Make Your First Transaction
+            </motion.button>
+          </div>
+        ) : (
+          filteredTransactions.map((transaction, index) => (
           <motion.div 
             key={transaction.id}
             className={`transaction-card ${transaction.type.toLowerCase()} ${transaction.status.toLowerCase()}`}
@@ -270,7 +335,8 @@ const Transactions = () => {
 
             <div className="transaction-glow"></div>
           </motion.div>
-        ))}
+          ))
+        )}
       </motion.div>
 
       {/* Load More */}
@@ -288,6 +354,15 @@ const Transactions = () => {
           Load More Transactions
         </motion.button>
       </motion.div>
+
+      {/* Transaction Form Modal */}
+      {showTransactionForm && (
+        <TransactionForm
+          user={user}
+          onTransactionComplete={handleTransactionComplete}
+          onClose={() => setShowTransactionForm(false)}
+        />
+      )}
     </div>
   );
 };

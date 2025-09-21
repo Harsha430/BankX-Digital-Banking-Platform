@@ -1,18 +1,55 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Dashboard from './components/Dashboard';
-import Login from './components/Login';
+import LoginForm from './components/auth/LoginForm';
+import RegisterForm from './components/auth/RegisterForm';
 import Transactions from './components/Transactions';
 import Accounts from './components/Accounts';
 import Profile from './components/Profile';
 import Navbar from './components/Navbar';
+import AuthFlow from './components/debug/AuthFlow';
 import './App.css';
+
+// Auth Page Component
+const AuthPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const { login } = useAuth();
+
+  const handleLogin = (user) => {
+    console.log('Login successful, user:', user);
+    login(user);
+    // The AuthFlow component will handle the redirect
+  };
+
+  const handleRegister = () => {
+    // Registration success is handled in RegisterForm
+    // User will be redirected to login
+  };
+
+  return (
+    <div className="auth-page">
+      {isLogin ? (
+        <LoginForm 
+          onLogin={handleLogin}
+          onSwitchToRegister={() => setIsLogin(false)}
+        />
+      ) : (
+        <RegisterForm 
+          onRegister={handleRegister}
+          onSwitchToLogin={() => setIsLogin(true)}
+        />
+      )}
+    </div>
+  );
+};
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
+  
+  console.log('ProtectedRoute - loading:', loading, 'isAuthenticated:', isAuthenticated, 'user:', user);
   
   if (loading) {
     return (
@@ -49,6 +86,8 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="app">
+          <AuthFlow />
+          
           <Toaster 
             position="top-right"
             toastOptions={{
@@ -63,7 +102,7 @@ function App() {
             }}
           />
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={<AuthPage />} />
             <Route path="/*" element={
               <ProtectedRoute>
                 <AppLayout />

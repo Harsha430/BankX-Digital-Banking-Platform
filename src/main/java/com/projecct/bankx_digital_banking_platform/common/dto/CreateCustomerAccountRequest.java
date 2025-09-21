@@ -17,7 +17,7 @@ public class CreateCustomerAccountRequest {
     @Email
     private String email;
     private String address;
-    private Short phone;
+    private String phone;
 
     // UserAuth info
     @NotBlank
